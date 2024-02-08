@@ -12,6 +12,10 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+dependencies = [
+  "numba",
+]
+
 
 [project.urls]
 Homepage = "https://github.com/johnrudge/xcover"
