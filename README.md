@@ -1,6 +1,6 @@
 # xcover
 
-A python package for solving exact cover with colors problems.
+A python package for solving exact cover with colours problems.
 
 ## Installation
 
@@ -28,7 +28,7 @@ print(list(covers(options)))
 ```
 which outputs a list of possible exact covers. In this case there is a single solution: cover by the options 1:={1, 4}, 3:={3, 5, 6}, and 5:={2, 7}.
 
-The `covers` function returns a [python generator](https://wiki.python.org/moin/Generators), an object that can be used in a `for` loop. This is useful in the case of multiple solutions if you want to do something immediately with each solution as it is calculated. If you just want to find1 the next solution you can use the `next` function on the generator.
+The `covers` function returns a [python generator](https://wiki.python.org/moin/Generators), an object that can be used in a `for` loop. This is useful in the case of multiple solutions if you want to do something immediately with each solution as it is calculated. If you just want to find the next solution you can use the `next` function on the generator.
 
 ### Exact cover with colours
 
@@ -55,11 +55,11 @@ In this problem there are three primary items `p`, `q`, and `r` that must be cov
 
 ## Dancing cells
 
-The algorithm used for finding the exact covers is [Donald Knuth's](https://www-cs-faculty.stanford.edu/~knuth/) algorithm C which uses "dancing cells". A full description of the algorithm can be found in his [draft manuscript](https://www-cs-faculty.stanford.edu/~knuth/musings.html).
+The algorithm used for finding the exact covers is [Donald Knuth's](https://www-cs-faculty.stanford.edu/~knuth/) algorithm C which uses "dancing cells". A full description of the algorithm can be found in his [draft manuscript](https://www-cs-faculty.stanford.edu/~knuth/fasc7a.ps.gz).
 
 ## Numba
 
-To accelerate the performance of the solver this package uses [numba](https://numba.pydata.org/) to perform Just In Time (JIT) compilation of the main algorithm. This means the first call to the solver may be slow (a few seconds) while numba compiles the function. However, later calls will be fast, and numba uses a cache to avoid repeated compilation. JIT compilation can be disabled by explicitly configuring numba before importing the `xcover` package.
+To accelerate the performance of the solver this package uses [numba](https://numba.pydata.org/) to perform Just In Time (JIT) compilation of the main algorithm. This means the first call to the solver may be slow (a few seconds) while numba compiles the function. However, later calls will be fast, as numba uses a cache to avoid repeated compilation. JIT compilation can be disabled by explicitly configuring numba before importing the `xcover` package.
 
 ```
 from numba import config
@@ -68,7 +68,7 @@ config.DISABLE_JIT = True
 
 ## Applications
 
-Many recreational mathematical puzzles can be naturally cast as exact cover problems. Examples include pentomino tiling, sudoku, and the n-queens problem. Donald Knuth's [Art of Computing volume 4B](https://www-cs-faculty.stanford.edu/~knuth/taocp.html) has an extensive discussion of many such problems. Exact cover problems are [NP-complete](https://en.wikipedia.org/wiki/NP-completeness) which means solve times can get very long quite quickly as problems get larger. Be warned!
+Many recreational mathematical puzzles can be naturally cast as exact cover problems. Examples include pentomino tiling, sudoku, and the n-queens problem. Donald Knuth's [Art of Computing volume 4B](https://www-cs-faculty.stanford.edu/~knuth/taocp.html) has an extensive discussion of many such problems. Exact cover problems are [NP-complete](https://en.wikipedia.org/wiki/NP-completeness) which means solve times can get very long very quickly as problems get larger. Be warned!
 
 ## License
 
