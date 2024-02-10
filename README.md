@@ -55,7 +55,7 @@ In this problem there are three primary items `p`, `q`, and `r` that must be cov
 
 ### Boolean arrays
 
-An alternative way of specifying an exact cover problem is terms a [boolean incidence matrix](https://en.wikipedia.org/wiki/Exact_cover#Incidence_matrix). The package provides a `covers_bool` function for directly solving such problems.
+An alternative way of specifying an exact cover problem is terms of a [boolean incidence matrix](https://en.wikipedia.org/wiki/Exact_cover#Incidence_matrix). The package provides a `covers_bool` function for directly solving such problems.
 ```
 import numpy as np
 from xcover import covers_bool
