@@ -104,3 +104,30 @@ def input_as_arrays(options, primary=None, secondary=None, colored=False):
     options_as_array = np.hstack(enum_opts)
 
     return options_as_array, options_ptr, colors, n_items, n_secondary
+
+
+def covers_bool(matrix):
+    """
+    Exact cover solver for a boolean matrix
+
+    Parameters
+    ----------
+    matrix: a numpy array whose nonzero entries indicate nodes.
+            Columns are the items, rows are the options.
+
+    Returns
+    -------
+    A generator object that yields solutions to the exact cover problem.
+    Each yielded result is a list of integers specifying the row indices of
+    the chosen options.
+    """
+    n_options = matrix.shape[0]
+    n_items = matrix.shape[1]
+    options = np.array(np.nonzero(matrix)[1], dtype=np.int64)
+    options_ptr = np.empty(matrix.shape[0] + 1, dtype=np.int64)
+    options_ptr[0] = 0
+    options_ptr[1:] = np.cumsum(np.count_nonzero(matrix, axis=1))
+    n_data = len(options)
+    n_secondary = 0
+    colors = np.zeros(n_data, dtype=np.int64)
+    yield from algorithm_c(options, options_ptr, colors, n_items, n_secondary)

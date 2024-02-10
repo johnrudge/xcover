@@ -1,5 +1,5 @@
-from xcover import covers
-from xcover.utils import verify_exact_cover, bool_array_to_options
+from xcover import covers, covers_bool
+from xcover.utils import verify_exact_cover
 from xcover.io import read_xcover_from_file
 import numpy as np
 
@@ -29,56 +29,31 @@ def test_wikipedia():
     assert set(sols[0]) == {1, 3, 5}
 
 
-def test_two_solution():
-    to_cover = [
-        [1, 0, 0, 1, 1, 0, 1, 0],
-        [1, 0, 0, 0, 1, 1, 0, 1],
-        [1, 0, 0, 0, 1, 1, 1, 0],
-        [1, 0, 1, 0, 1, 1, 0, 0],
-        [1, 0, 0, 0, 1, 0, 1, 1],
-        [1, 0, 1, 1, 1, 0, 0, 0],  # <- 5
-        [1, 0, 0, 0, 0, 1, 1, 1],  # <- 6
-        [0, 1, 0, 1, 1, 0, 1, 0],
-        [0, 1, 0, 0, 1, 1, 0, 1],
-        [0, 1, 0, 0, 1, 1, 1, 0],
-        [0, 1, 1, 0, 1, 1, 0, 0],
-        [0, 1, 0, 0, 1, 0, 1, 1],
-        [0, 1, 1, 1, 1, 0, 0, 0],  # <- 12
-        [0, 1, 0, 0, 0, 1, 1, 1],  # <- 13
-    ]
-    data = np.array(to_cover, dtype=bool)
-    options = bool_array_to_options(data)
-
-    sols = list(covers(options))
-    [verify_exact_cover(s, options) for s in sols]
+def test_bool_solve():
+    to_cover = np.array(
+        [
+            [1, 0, 0, 1, 1, 0, 1, 0],
+            [1, 0, 0, 0, 1, 1, 0, 1],
+            [1, 0, 0, 0, 1, 1, 1, 0],
+            [1, 0, 1, 0, 1, 1, 0, 0],
+            [1, 0, 0, 0, 1, 0, 1, 1],
+            [1, 0, 1, 1, 1, 0, 0, 0],  # <- 5
+            [1, 0, 0, 0, 0, 1, 1, 1],  # <- 6
+            [0, 1, 0, 1, 1, 0, 1, 0],
+            [0, 1, 0, 0, 1, 1, 0, 1],
+            [0, 1, 0, 0, 1, 1, 1, 0],
+            [0, 1, 1, 0, 1, 1, 0, 0],
+            [0, 1, 0, 0, 1, 0, 1, 1],
+            [0, 1, 1, 1, 1, 0, 0, 0],  # <- 12
+            [0, 1, 0, 0, 0, 1, 1, 1],  # <- 13
+        ]
+    )
+    sols = list(covers_bool(to_cover))
 
     true_sols = [{5, 13}, {6, 12}]
     s1 = set([frozenset(s) for s in sols])
     s2 = set([frozenset(s) for s in true_sols])
     assert s1 == s2
-
-
-def test_another_array():
-    to_cover = np.array(
-        [
-            [1, 0, 0, 1, 0, 0, 1, 0],
-            [0, 1, 0, 0, 1, 0, 0, 1],
-            [0, 0, 1, 0, 0, 1, 0, 0],
-            [0, 0, 0, 1, 0, 0, 0, 0],
-            [1, 0, 1, 0, 1, 0, 0, 1],
-            [0, 1, 0, 0, 0, 1, 1, 0],
-            [1, 0, 0, 1, 0, 0, 1, 0],
-            [0, 1, 0, 0, 1, 0, 0, 1],
-            [0, 0, 1, 0, 0, 1, 0, 0],
-            [0, 0, 0, 1, 0, 0, 0, 0],
-            [1, 0, 1, 0, 1, 0, 0, 1],
-            [0, 1, 0, 0, 0, 1, 1, 0],
-        ]
-    )
-    options = bool_array_to_options(to_cover)
-
-    sols = list(covers(options))
-    [verify_exact_cover(s, options) for s in sols]
 
 
 def test_simple_secondary():

@@ -12,4 +12,4 @@ a generator yielding solutions to exact cover problems.
 __version__ = "0.1.1"
 __author__ = "John F. Rudge"
 
-from .solvers import covers
+from .solvers import covers, covers_bool
