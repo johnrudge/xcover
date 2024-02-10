@@ -53,9 +53,31 @@ print(list(covers(options, primary=primary, secondary=secondary, colored=True)))
 ```
 In this problem there are three primary items `p`, `q`, and `r` that must be covered, and two secondary items `x` and `y` that may be covered. The exact cover is given by the two sets {`p`, `r`, `x:A`, `y`} and {`q`, `x:A`}. In this cover the item `x` is covered twice, but that is acceptable as both instances are colored `A`. The xcover package denotes the colouring of items by a colon followed by a label.
 
+### Boolean arrays
+
+An alternative way of specifying an exact cover problem is terms a [boolean incidence matrix](https://en.wikipedia.org/wiki/Exact_cover#Incidence_matrix). The package provides a `covers_bool` function for directly solving such problems.
+```
+import numpy as np
+from xcover import covers_bool
+
+matrix = np.array([
+    [1, 0, 0, 1, 0, 0, 1],
+    [1, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 1, 1, 0, 1],
+    [0, 0, 1, 0, 1, 1, 0],
+    [0, 1, 1, 0, 0, 1, 1],
+    [0, 1, 0, 0, 0, 0, 1]
+    ], dtype=bool)
+print(next(covers_bool(matrix)))
+```
+
+```
+[1, 3, 5]
+```
+
 ## Dancing cells
 
-The algorithm used for finding the exact covers is [Donald Knuth's](https://www-cs-faculty.stanford.edu/~knuth/) algorithm C which uses "dancing cells". A full description of the algorithm can be found in his [draft manuscript](https://www-cs-faculty.stanford.edu/~knuth/fasc7a.ps.gz).
+The algorithm used for finding the exact covers is [Donald Knuth's](https://www-cs-faculty.stanford.edu/~knuth/) algorithm C which uses "dancing cells". A full description of the algorithm can be found in his [draft manuscript](https://www-cs-faculty.stanford.edu/~knuth/fasc7a.ps.gz). The main algorithm is in `xcover.dancing_cells.algorithm_c` and can be called directly if desired.
 
 ## Numba
 
