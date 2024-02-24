@@ -1,6 +1,6 @@
 [project]
 name = "xcover"
-version = "0.1.1"
+version = "0.1.2"
 authors = [
   { name="John F. Rudge", email="jfr23@cam.ac.uk" },
 ]
@@ -9,7 +9,7 @@ readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
     "Operating System :: OS Independent",
 ]
 dependencies = [

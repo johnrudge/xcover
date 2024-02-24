@@ -4,7 +4,7 @@ import numpy as np
 from numba import njit
 
 
-@njit(cache=True)
+@njit("(int64[:], int64[:], int64[:], int64, int64)", cache=True)
 def algorithm_c(options, options_ptr, colors, n_items, n_secondary_items):
     """
     Donald Knuth's dancing cells algorithm C.
