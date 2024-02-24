@@ -179,23 +179,28 @@ def algorithm_c(options, options_ptr, colors, n_items, n_secondary_items):
     initial_state = save_state()  # saved state for backtracking
     state_stack = [initial_state, initial_state]  # stack of states
 
+    need_to_undo = False
     while node_stack:
         if len(node_stack[-1]) == 0:
-            # backtracking, C10, C11
+            # backtracking, C10
             node_stack.pop()
             state_stack.pop()
             item_stack.pop()
-            undo(state_stack[-1])  # return to previous state, C11
+            need_to_undo = True
             if solution:
                 solution.pop()
         else:
+            if need_to_undo:
+                undo(state_stack[-1])  # return to previous state, C11
+                need_to_undo = False
+
             node = node_stack[-1].pop()  # C6
             if node >= 0:
                 option = cover(node, item_stack[-1])  # C6 and C7
             else:
                 option = -2
             if option == -1:  # case where cover failed
-                undo(state_stack[-1])  # return to previous state, C11
+                need_to_undo = True
             else:
                 if option >= 0:
                     solution.append(option)  # include option in partial solution
@@ -203,7 +208,7 @@ def algorithm_c(options, options_ptr, colors, n_items, n_secondary_items):
                 if item == -1:
                     yield list(solution)  # found a solution!
                     solution.pop()
-                    undo(state_stack[-1])  # return to previous state, C11
+                    need_to_undo = True
                 else:
                     item_stack.append(item)
                     deactivate_item(item)  # C3
