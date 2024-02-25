@@ -164,12 +164,17 @@ def algorithm_c(options, options_ptr, colors, n_items, n_secondary_items):
         """C2: Choose the next item to cover. Return -1 if solved already"""
         # Using the minimum remaining value (MRV) heuristic here
         active_items = matrix_active_items[0 : matrix_active_items_len[0]]
-        lens = matrix_size[active_items]
-        cond = active_items >= n_primary_items
-        lens[cond] = n_data
-        if sum(lens[~cond]) == 0:
-            return -1  # matrix is solved
-        return matrix_active_items[np.argmin(lens)]
+        chosen_item = -1
+        chosen_length = n_data
+        for item in active_items:
+            if item < n_primary_items:
+                length = matrix_size[item]
+                if length < chosen_length:
+                    chosen_item = item
+                    chosen_length = length
+                    if length == 1:
+                        return chosen_item
+        return chosen_item
 
     # Main loop. A depth-first search, written here using a stack
     # rather than recursive as numba doesn't support yield from
@@ -177,7 +182,7 @@ def algorithm_c(options, options_ptr, colors, n_items, n_secondary_items):
     node_stack = [[-1]]  # current list of nodes to explore (-1 is root)
     item_stack = [-1]  # current list of covered items
     initial_state = save_state()  # saved state for backtracking
-    state_stack = [initial_state, initial_state]  # stack of states
+    state_stack = [initial_state]  # stack of states
 
     need_to_undo = False
     while node_stack:
