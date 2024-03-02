@@ -63,7 +63,10 @@ def color_indices(all_opts):
     """
     col_names = {x.split(":")[-1] for x in all_opts if ":" in x}
     col_to_idx = {col: i + 1 for i, col in enumerate(col_names)}
-    return np.array([col_to_idx[x.split(":")[-1]] if ":" in x else 0 for x in all_opts])
+    return np.array(
+        [col_to_idx[x.split(":")[-1]] if ":" in x else 0 for x in all_opts],
+        dtype=np.uint64,
+    )
 
 
 def input_as_arrays(options, primary=None, secondary=None, colored=False):
@@ -84,11 +87,11 @@ def input_as_arrays(options, primary=None, secondary=None, colored=False):
     if colored:
         colors = color_indices(all_opts)
     else:
-        colors = np.zeros(len(all_opts), dtype=np.int64)
+        colors = np.zeros(len(all_opts), dtype=np.uint64)
 
     # Form pointer array which gives start and end index of each option
     lens = np.array([len(opt) for opt in options])
-    options_ptr = np.zeros(len(lens) + 1, dtype=np.int64)
+    options_ptr = np.zeros(len(lens) + 1, dtype=np.uint64)
     options_ptr[1:] = np.cumsum(lens)
 
     # dictionaries which enumerate each of the items
@@ -101,7 +104,7 @@ def input_as_arrays(options, primary=None, secondary=None, colored=False):
         enum_opts = [item_to_idx[x.split(":")[0]] for x in all_opts]
     else:
         enum_opts = [item_to_idx[x] for x in all_opts]
-    options_as_array = np.hstack(enum_opts)
+    options_as_array = np.array(np.hstack(enum_opts), dtype=np.uint64)
 
     return options_as_array, options_ptr, colors, n_items, n_secondary
 
@@ -123,11 +126,11 @@ def covers_bool(matrix):
     """
     n_options = matrix.shape[0]
     n_items = matrix.shape[1]
-    options = np.array(np.nonzero(matrix)[1], dtype=np.int64)
-    options_ptr = np.empty(matrix.shape[0] + 1, dtype=np.int64)
+    options = np.array(np.nonzero(matrix)[1], dtype=np.uint64)
+    options_ptr = np.empty(matrix.shape[0] + 1, dtype=np.uint64)
     options_ptr[0] = 0
     options_ptr[1:] = np.cumsum(np.count_nonzero(matrix, axis=1))
     n_data = len(options)
     n_secondary = 0
-    colors = np.zeros(n_data, dtype=np.int64)
+    colors = np.zeros(n_data, dtype=np.uint64)
     yield from algorithm_c(options, options_ptr, colors, n_items, n_secondary)
