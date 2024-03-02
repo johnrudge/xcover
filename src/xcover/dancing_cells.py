@@ -33,7 +33,7 @@ def algorithm_c(options, options_ptr, colors, n_items, n_secondary_items):
     # options_j gives the option index of each node in the matrix
     options_j = np.empty(n_data, dtype=np.uint64)
     for j, i in enumerate(range(n_opts)):
-        options_j[options_ptr[i] : options_ptr[i + u(1)]] = j
+        options_j[options_ptr[u(i)] : options_ptr[u(i + 1)]] = j
 
     # matrix_size gives the number of (active) options for each item
     matrix_size = np.zeros(n_items, dtype=np.uint64)
@@ -162,7 +162,7 @@ def algorithm_c(options, options_ptr, colors, n_items, n_secondary_items):
         matrix_size[:], matrix_active_items_len[0] = state
 
     def choose():
-        """C2: Choose the next item to cover. Return -1 if solved already"""
+        """C2: Choose the next item to cover. Return n_data if solved already"""
         # Using the minimum remaining value (MRV) heuristic here
         active_items = matrix_active_items[0 : matrix_active_items_len[0]]
         chosen_item = n_items
