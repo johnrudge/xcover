@@ -1,11 +1,11 @@
 """Numba-accelerated implementation of Donald Knuth's dancing cells algorithm."""
 
 import numpy as np
-from numpy import uint64 as u
+from numpy import uint32 as u
 from numba import njit
 
 
-@njit("(uint64[:], uint64[:], uint64[:], uint64, uint64)", cache=True)
+@njit("(uint32[:], uint32[:], uint32[:], uint32, uint32)", cache=True)
 def algorithm_c(options, options_ptr, colors, n_items, n_secondary_items):
     """
     Donald Knuth's dancing cells algorithm C.
@@ -31,25 +31,25 @@ def algorithm_c(options, options_ptr, colors, n_items, n_secondary_items):
     n_primary_items = u(n_items - n_secondary_items)
 
     # options_j gives the option index of each node in the matrix
-    options_j = np.empty(n_data, dtype=np.uint64)
+    options_j = np.empty(n_data, dtype=np.uint32)
     for j, i in enumerate(range(n_opts)):
         options_j[options_ptr[u(i)] : options_ptr[u(i + 1)]] = j
 
     # matrix_size gives the number of (active) options for each item
-    matrix_size = np.zeros(n_items, dtype=np.uint64)
+    matrix_size = np.zeros(n_items, dtype=np.uint32)
     for node in range(n_data):
         matrix_size[options[node]] += u(1)
 
     # matrix_start_ptr points to the start of the "column" in the matrix
     # for each item
-    matrix_start_ptr = np.empty(n_items, dtype=np.uint64)
+    matrix_start_ptr = np.empty(n_items, dtype=np.uint32)
     matrix_start_ptr[0] = 0
     matrix_start_ptr[u(1) :] = np.cumsum(matrix_size)[:-1]
 
     # matrix_set and matrix_loc are sparse-set partners
-    matrix_set = np.empty(n_data, dtype=np.uint64)
-    matrix_loc = np.empty(n_data, dtype=np.uint64)
-    counts = np.zeros(n_items, dtype=np.uint64)
+    matrix_set = np.empty(n_data, dtype=np.uint32)
+    matrix_loc = np.empty(n_data, dtype=np.uint32)
+    counts = np.zeros(n_items, dtype=np.uint32)
     for node in range(n_data):
         i = options[node]
         val = matrix_start_ptr[i] + counts[i]
@@ -59,11 +59,11 @@ def algorithm_c(options, options_ptr, colors, n_items, n_secondary_items):
 
     # the active items (items left to cover) use another sparse set
     # matrix_active_items and matrix_active_items_sparse are partners
-    matrix_active_items = np.arange(n_items, dtype=np.uint64)
-    matrix_active_items_sparse = np.arange(n_items, dtype=np.uint64)
-    matrix_active_items_len = np.empty(u(1), dtype=np.uint64)
+    matrix_active_items = np.arange(n_items, dtype=np.uint32)
+    matrix_active_items_sparse = np.arange(n_items, dtype=np.uint32)
+    matrix_active_items_len = np.empty(u(1), dtype=np.uint32)
     matrix_active_items_len[0] = n_items
-    matrix_old_active_items_len = np.empty(u(1), dtype=np.uint64)
+    matrix_old_active_items_len = np.empty(u(1), dtype=np.uint32)
     matrix_active_items_len[0] = n_items
 
     def active_insert(item, index):
@@ -143,14 +143,13 @@ def algorithm_c(options, options_ptr, colors, n_items, n_secondary_items):
         for ptr in ptr_range:
             itm = options[ptr]
             col_hide = colors[ptr]
-            if itm != item:
-                if (
-                    itm < n_primary_items
-                    or matrix_active_items_sparse[itm] < matrix_old_active_items_len[0]
-                ):
-                    status = hide(itm, col_hide, False)
-                    if status is False:
-                        return n_opts
+            if itm != item and (
+                itm < n_primary_items
+                or matrix_active_items_sparse[itm] < matrix_old_active_items_len[0]
+            ):
+                status = hide(itm, col_hide, False)
+                if status is False:
+                    return n_opts
         return option
 
     def save_state():
@@ -168,13 +167,11 @@ def algorithm_c(options, options_ptr, colors, n_items, n_secondary_items):
         chosen_item = n_items
         chosen_length = n_data
         for item in active_items:
-            if item < n_primary_items:
-                length = matrix_size[item]
-                if length < chosen_length:
-                    chosen_item = item
-                    chosen_length = length
-                    if length == u(1):
-                        return chosen_item
+            if item < n_primary_items and matrix_size[item] < chosen_length:
+                chosen_item = item
+                chosen_length = matrix_size[item]
+                if chosen_length == u(1):
+                    return chosen_item
         return chosen_item
 
     # Main loop. A depth-first search, written here using a stack

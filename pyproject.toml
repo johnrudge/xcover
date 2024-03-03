@@ -1,6 +1,6 @@
 [project]
 name = "xcover"
-version = "0.1.5"
+version = "0.1.6"
 authors = [
   { name="John F. Rudge", email="jfr23@cam.ac.uk" },
 ]
