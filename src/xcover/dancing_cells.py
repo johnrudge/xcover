@@ -171,8 +171,8 @@ def algorithm_c(options, options_ptr, colors, n_items, n_secondary_items):
                 chosen_item = item
                 chosen_length = matrix_size[item]
                 if chosen_length == u(1):
-                    return chosen_item
-        return chosen_item
+                    return chosen_item, chosen_length
+        return chosen_item, chosen_length
 
     # Main loop. A depth-first search, written here using a stack
     # rather than recursive as numba doesn't support yield from
@@ -181,6 +181,7 @@ def algorithm_c(options, options_ptr, colors, n_items, n_secondary_items):
     item_stack = [n_items]  # current list of covered items
     initial_state = save_state()  # saved state for backtracking
     state_stack = [initial_state]  # stack of states
+    null_state = (np.empty(0, dtype=np.uint32), u(1))  # null state used as placeholder
 
     need_to_undo = False
     while node_stack:
@@ -207,7 +208,7 @@ def algorithm_c(options, options_ptr, colors, n_items, n_secondary_items):
             else:
                 if option < n_opts:
                     solution.append(option)  # include option in partial solution
-                item = choose()  # C2
+                item, length = choose()  # C2
                 if item == n_items:
                     yield list(solution)  # found a solution!
                     solution.pop()
@@ -217,5 +218,7 @@ def algorithm_c(options, options_ptr, colors, n_items, n_secondary_items):
                     deactivate_item(item)  # C3
                     matrix_old_active_items_len[0] = matrix_active_items_len[0]
                     hide(item, 0, True)  # C4
-                    state_stack.append(save_state())  # C5
+                    state_stack.append(
+                        null_state if length == 1 else save_state()
+                    )  # C5 (don't need to trail forced moves)
                     node_stack.append(list(active_options(item)))
