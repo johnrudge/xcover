@@ -242,3 +242,22 @@ def plot_solution(solution, colors=None):
     plt.gca().set_aspect("equal")
     plt.axis("off")
     plt.tight_layout()
+
+
+if __name__ == "__main__":
+    from xcover import covers
+
+    def macmahon_solver(boundary_word, boundary_color="a"):
+        cells, boundary_edges = macmahon_mesh(boundary_word)
+        pieces = macmahon_pieces()
+        options = macmahon_options(cells, pieces, boundary_color, boundary_edges)
+        primary = macmahon_primary(cells, pieces)
+
+        for cover in covers(options, primary=primary, colored=True):
+            yield [options[j] for j in cover]
+
+    boundary_word = r"_2/2\2_-2/-2\-2"  # hexagon
+    solver = macmahon_solver(boundary_word)
+    solution = next(solver)
+    plot_solution(solution)
+    plt.show()
