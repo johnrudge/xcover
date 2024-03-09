@@ -124,7 +124,6 @@ def covers_bool(matrix):
     Each yielded result is a list of integers specifying the row indices of
     the chosen options.
     """
-    n_options = matrix.shape[0]
     n_items = matrix.shape[1]
     options = np.array(np.nonzero(matrix)[1], dtype=np.uint32)
     options_ptr = np.empty(matrix.shape[0] + 1, dtype=np.uint32)

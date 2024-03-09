@@ -9,7 +9,7 @@ a generator yielding solutions to exact cover problems.
 
 """
 
-__version__ = "0.1.7"
+__version__ = "0.1.8"
 __author__ = "John F. Rudge"
 
 from .solvers import covers, covers_bool

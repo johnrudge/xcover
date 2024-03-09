@@ -199,10 +199,9 @@ def algorithm_c(options, options_ptr, colors, n_items, n_secondary_items):
                 need_to_undo = False
 
             node = u(node_stack[-1].pop())  # C6
-            if node < n_data:
-                option = cover(node, item_stack[-1])  # C6 and C7
-            else:
-                option = n_opts + u(1)
+            option = (
+                n_opts + u(1) if node == n_data else cover(node, item_stack[-1])
+            )  # C6 and C7
             if option == n_opts:  # case where cover failed
                 need_to_undo = True
             else:
