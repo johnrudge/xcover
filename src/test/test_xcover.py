@@ -3,6 +3,8 @@ from xcover.utils import verify_exact_cover
 from xcover.io import read_xcover_from_file
 from xcover.zdd_utils import to_zdd_algorithms
 import numpy as np
+import pytest
+import sys
 
 
 def test_knuth_simple():
@@ -190,6 +192,7 @@ def test_file_solve():
     assert len(sols) == 150
 
 
+@pytest.mark.skipif(sys.version_info < (3, 9), reason="requires python3.9 or higher")
 def test_file_solve_zdd():
     import os
     from zdd_algorithms import count
@@ -213,6 +216,7 @@ def test_file_solve_zdd():
             assert count(algo_zdd) == nsol
 
 
+@pytest.mark.skipif(sys.version_info < (3, 9), reason="requires python3.9 or higher")
 def test_bool_solve_zdd():
     from zdd_algorithms import to_set_of_sets
 
