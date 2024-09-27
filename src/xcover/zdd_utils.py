@@ -19,7 +19,9 @@ def to_setset(zdd, n_options):
     zdd_string = ""
     for z in zdd:
         i, n, lo, hi = z[0], 1 + z[1], z[2], z[3]
-        zdd_string += f"{i} {n} {"B" if lo ==0 else lo} {"T" if hi == 1 else hi}\n"
+        lo_str = "B" if lo == 0 else lo
+        hi_str = "T" if hi == 1 else hi
+        zdd_string += f"{i} {n} {lo_str} {hi_str}\n"
     zdd_string += ".\n"
     return setset(setset.loads(zdd_string))
 
