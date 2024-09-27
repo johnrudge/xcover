@@ -22,3 +22,19 @@ def to_setset(zdd, n_options):
         zdd_string += f"{i} {n} {"B" if lo ==0 else lo} {"T" if hi == 1 else hi}\n"
     zdd_string += ".\n"
     return setset(setset.loads(zdd_string))
+
+
+def to_oxidd(
+    zdd, n_options, inner_node_capacity=2000000, apply_cache_size=2000000, threads=1
+):
+    from oxidd.zbdd import ZBDDManager
+
+    zbdd = ZBDDManager(inner_node_capacity, apply_cache_size, threads)
+    vbls = [zbdd.new_singleton() for i in range(n_options)]
+
+    nodes = [zbdd.empty(), zbdd.base()]
+    for z in zdd:
+        i, n, lo, hi = z[0], z[1], z[2], z[3]
+        nodes.append(vbls[n].make_node(nodes[hi], nodes[lo]))
+
+    return nodes[-1]
