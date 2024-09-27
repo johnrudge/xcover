@@ -1,6 +1,8 @@
 """Solvers for exact cover problems"""
 
 import numpy as np
+from .dancing_cells import algorithm_c
+from .dancing_cells_zdd import algorithm_z
 
 
 def covers(options, primary=None, secondary=None, colored=False):
@@ -25,7 +27,6 @@ def covers(options, primary=None, secondary=None, colored=False):
     Each yielded result is a list of integers specifying the indices of
     the chosen options.
     """
-    from .dancing_cells import algorithm_c
 
     options, options_ptr, colors, n_items, n_secondary = input_as_arrays(
         options,
@@ -125,7 +126,6 @@ def covers_bool(matrix):
     Each yielded result is a list of integers specifying the row indices of
     the chosen options.
     """
-    from .dancing_cells import algorithm_c
 
     n_items = matrix.shape[1]
     options = np.array(np.nonzero(matrix)[1], dtype=np.uint32)
@@ -162,7 +162,6 @@ def covers_zdd(
     A generator object that yields a ZDD for the exact cover problem.
     Each yielded result is a ZDD node tuple (index, item, lo, hi).
     """
-    from .dancing_cells_zdd import algorithm_z
 
     n_options = len(options)
     options, options_ptr, colors, n_items, n_secondary = input_as_arrays(
