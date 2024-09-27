@@ -1,7 +1,6 @@
 """Solvers for exact cover problems"""
 
 import numpy as np
-from .dancing_cells import algorithm_c
 
 
 def covers(options, primary=None, secondary=None, colored=False):
@@ -26,6 +25,8 @@ def covers(options, primary=None, secondary=None, colored=False):
     Each yielded result is a list of integers specifying the indices of
     the chosen options.
     """
+    from .dancing_cells import algorithm_c
+
     options, options_ptr, colors, n_items, n_secondary = input_as_arrays(
         options,
         primary=primary,
@@ -124,6 +125,8 @@ def covers_bool(matrix):
     Each yielded result is a list of integers specifying the row indices of
     the chosen options.
     """
+    from .dancing_cells import algorithm_c
+
     n_items = matrix.shape[1]
     options = np.array(np.nonzero(matrix)[1], dtype=np.uint32)
     options_ptr = np.empty(matrix.shape[0] + 1, dtype=np.uint32)
@@ -133,3 +136,70 @@ def covers_bool(matrix):
     n_secondary = 0
     colors = np.zeros(n_data, dtype=np.uint32)
     yield from algorithm_c(options, options_ptr, colors, n_items, n_secondary)
+
+
+def covers_zdd(
+    options, primary=None, secondary=None, colored=False, use_memo_cache=False
+):
+    """
+    Exact cover with colors solver returning nodes of a ZDD
+
+    Parameters
+    ----------
+    options: a list of lists of items
+    primary: a list of items that are primary (must be covered)
+             if None, infer from the given options and secondary
+    secondary: a list of items that are secondary (may be covered)
+               if None, infer from the given options and primary
+    colored: whether to do a colored solve (by default do not)
+             for a colored solve, secondary items must be strings
+             with colors in options separated by colons
+             e.g. 'q:RED'
+    use_memo_cache: bool, whether to use memoization
+
+    Returns
+    -------
+    A generator object that yields a ZDD for the exact cover problem.
+    Each yielded result is a ZDD node tuple (index, item, lo, hi).
+    """
+    from .dancing_cells_zdd import algorithm_z
+
+    n_options = len(options)
+    options, options_ptr, colors, n_items, n_secondary = input_as_arrays(
+        options,
+        primary=primary,
+        secondary=secondary,
+        colored=colored,
+    )
+    return algorithm_z(
+        options, options_ptr, colors, n_items, n_secondary, use_memo_cache
+    )
+
+
+def covers_bool_zdd(matrix, use_memo_cache=False):
+    """
+    Exact cover solver for a boolean matrix returning a ZDD
+
+    Parameters
+    ----------
+    matrix: a numpy array whose nonzero entries indicate nodes.
+            Columns are the items, rows are the options.
+
+    Returns
+    -------
+    A generator object that yields a ZDD for the exact cover problem.
+    Each yielded result is a ZDD node tuple (index, item, lo, hi).
+    """
+    from .dancing_cells_zdd import algorithm_z
+
+    n_items = matrix.shape[1]
+    options = np.array(np.nonzero(matrix)[1], dtype=np.uint32)
+    options_ptr = np.empty(matrix.shape[0] + 1, dtype=np.uint32)
+    options_ptr[0] = 0
+    options_ptr[1:] = np.cumsum(np.count_nonzero(matrix, axis=1))
+    n_data = len(options)
+    n_secondary = 0
+    colors = np.zeros(n_data, dtype=np.uint32)
+    yield from algorithm_z(
+        options, options_ptr, colors, n_items, n_secondary, use_memo_cache
+    )

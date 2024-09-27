@@ -1,6 +1,7 @@
-from xcover import covers, covers_bool
+from xcover import covers, covers_zdd, covers_bool, covers_bool_zdd
 from xcover.utils import verify_exact_cover
 from xcover.io import read_xcover_from_file
+from xcover.zdd_utils import to_zdd_algorithms
 import numpy as np
 
 
@@ -187,3 +188,58 @@ def test_file_solve():
 
     sols = list(covers(options, primary=primary, secondary=secondary, colored=colored))
     assert len(sols) == 150
+
+
+def test_file_solve_zdd():
+    import os
+    from zdd_algorithms import count
+
+    files = ["dodecahedron.txt", "langford8.txt"]
+    nsols = [300, 150]
+
+    for fname, nsol in zip(files, nsols):
+        filename = os.path.join(os.path.dirname(__file__), fname)
+        options, primary, secondary, colored = read_xcover_from_file(filename)
+
+        for use_memo_cache in [False, True]:  # check both with and without memoization
+            zdd = covers_zdd(
+                options,
+                primary=primary,
+                secondary=secondary,
+                colored=colored,
+                use_memo_cache=use_memo_cache,
+            )
+            algo_zdd = to_zdd_algorithms(zdd)
+            assert count(algo_zdd) == nsol
+
+
+def test_bool_solve_zdd():
+    from zdd_algorithms import to_set_of_sets
+
+    to_cover = np.array(
+        [
+            [1, 0, 0, 1, 1, 0, 1, 0],
+            [1, 0, 0, 0, 1, 1, 0, 1],
+            [1, 0, 0, 0, 1, 1, 1, 0],
+            [1, 0, 1, 0, 1, 1, 0, 0],
+            [1, 0, 0, 0, 1, 0, 1, 1],
+            [1, 0, 1, 1, 1, 0, 0, 0],  # <- 5
+            [1, 0, 0, 0, 0, 1, 1, 1],  # <- 6
+            [0, 1, 0, 1, 1, 0, 1, 0],
+            [0, 1, 0, 0, 1, 1, 0, 1],
+            [0, 1, 0, 0, 1, 1, 1, 0],
+            [0, 1, 1, 0, 1, 1, 0, 0],
+            [0, 1, 0, 0, 1, 0, 1, 1],
+            [0, 1, 1, 1, 1, 0, 0, 0],  # <- 12
+            [0, 1, 0, 0, 0, 1, 1, 1],  # <- 13
+        ]
+    )
+    for use_memo_cache in [False, True]:
+        zdd = covers_bool_zdd(to_cover, use_memo_cache)
+        algo_zdd = to_zdd_algorithms(zdd)
+        sols = to_set_of_sets(algo_zdd)
+
+        true_sols = [{5, 13}, {6, 12}]
+        s1 = set([frozenset(s) for s in sols])
+        s2 = set([frozenset(s) for s in true_sols])
+        assert s1 == s2

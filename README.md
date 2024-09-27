@@ -56,6 +56,7 @@ In this problem there are three primary items `p`, `q`, and `r` that must be cov
 ### Boolean arrays
 
 An alternative way of specifying an exact cover problem is in terms of a [boolean incidence matrix](https://en.wikipedia.org/wiki/Exact_cover#Incidence_matrix). The package provides a `covers_bool` function for directly solving such problems.
+
 ```
 import numpy as np
 from xcover import covers_bool
@@ -91,6 +92,29 @@ config.DISABLE_JIT = True
 ## Applications
 
 Many recreational mathematical puzzles can be naturally cast as exact cover problems. Examples include pentomino tiling, sudoku, and the n-queens problem. Donald Knuth's [Art of Computing volume 4B](https://www-cs-faculty.stanford.edu/~knuth/taocp.html) has an extensive discussion of many such problems. Exact cover problems are [NP-complete](https://en.wikipedia.org/wiki/NP-completeness) which means solve times can get very long very quickly as problems get larger. Be warned!
+
+
+## Zero-suppressed decision diagrams
+
+The function `covers_zdd` solves the sames problems as `covers` but instead of yielding individual solutions, it yields the nodes of a [Zero-suppressed decision diagram (ZDD)](https://en.wikipedia.org/wiki/Zero-suppressed_decision_diagram) using the approach described in [Nishino et al 2017](https://doi.org/10.1609/aaai.v31i1.10662) and in Knuth's [Art of Computing volume 4B](https://www-cs-faculty.stanford.edu/~knuth/taocp.html). It also support the use of memoization (with `use_memo_cache=True`) which can speed up solves for some problems (those where the same subproblem appears many times). The resulting ZDD can then be manipulated with other libraries. `xcover.zdd_utils.to_zdd_algorithms` provides a conversion function for further manipulation with the python [zdd_algorithms](https://github.com/Thilo-J/zdd_algorithms) package.
+
+```
+from xcover import covers_zdd
+from xcover.zdd_utils import to_zdd_algorithms
+from zdd_algorithms import to_set_of_sets, count
+
+options = [[1, 4, 7], [1, 4], [4, 5, 7], [3, 5, 6], [2, 3, 6, 7], [2, 7]]
+zdd = covers_zdd(options)
+algo_zdd = to_zdd_algorithms(zdd)
+nsols = count(algo_zdd)
+sols = to_set_of_sets(algo_zdd)
+print(nsols, sols)
+```
+
+```
+1 {frozenset({1, 3, 5})}
+```
+
 
 ## License
 

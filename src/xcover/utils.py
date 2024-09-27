@@ -1,4 +1,5 @@
 """Some useful additional routines"""
+
 import numpy as np
 from .solvers import items
 
