@@ -205,15 +205,17 @@ def test_file_solve_zdd():
         options, primary, secondary, colored = read_xcover_from_file(filename)
 
         for use_memo_cache in [False, True]:  # check both with and without memoization
-            zdd = covers_zdd(
-                options,
-                primary=primary,
-                secondary=secondary,
-                colored=colored,
-                use_memo_cache=use_memo_cache,
-            )
-            algo_zdd = to_zdd_algorithms(zdd)
-            assert count(algo_zdd) == nsol
+            for choose_heuristic in ["MRV", "leftmost"]:  # check heuristics
+                zdd = covers_zdd(
+                    options,
+                    primary=primary,
+                    secondary=secondary,
+                    colored=colored,
+                    use_memo_cache=use_memo_cache,
+                    choose_heuristic=choose_heuristic,
+                )
+                algo_zdd = to_zdd_algorithms(zdd)
+                assert count(algo_zdd) == nsol
 
 
 @pytest.mark.skipif(sys.version_info < (3, 9), reason="requires python3.9 or higher")
@@ -239,11 +241,12 @@ def test_bool_solve_zdd():
         ]
     )
     for use_memo_cache in [False, True]:
-        zdd = covers_bool_zdd(to_cover, use_memo_cache)
-        algo_zdd = to_zdd_algorithms(zdd)
-        sols = to_set_of_sets(algo_zdd)
+        for choose_heuristic in ["MRV", "leftmost"]:
+            zdd = covers_bool_zdd(to_cover, use_memo_cache, choose_heuristic)
+            algo_zdd = to_zdd_algorithms(zdd)
+            sols = to_set_of_sets(algo_zdd)
 
-        true_sols = [{5, 13}, {6, 12}]
-        s1 = set([frozenset(s) for s in sols])
-        s2 = set([frozenset(s) for s in true_sols])
-        assert s1 == s2
+            true_sols = [{5, 13}, {6, 12}]
+            s1 = set([frozenset(s) for s in sols])
+            s2 = set([frozenset(s) for s in true_sols])
+            assert s1 == s2

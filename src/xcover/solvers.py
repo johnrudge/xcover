@@ -139,7 +139,12 @@ def covers_bool(matrix):
 
 
 def covers_zdd(
-    options, primary=None, secondary=None, colored=False, use_memo_cache=False
+    options,
+    primary=None,
+    secondary=None,
+    colored=False,
+    use_memo_cache=False,
+    choose_heuristic="MRV",
 ):
     """
     Exact cover with colors solver returning nodes of a ZDD
@@ -156,6 +161,9 @@ def covers_zdd(
              with colors in options separated by colons
              e.g. 'q:RED'
     use_memo_cache: bool, whether to use memoization
+    choose_heuristic: string, heuristic to use when choosing items
+             default is "MRV", minimum remaining value
+             "leftmost" is an alternative
 
     Returns
     -------
@@ -171,11 +179,17 @@ def covers_zdd(
         colored=colored,
     )
     return algorithm_z(
-        options, options_ptr, colors, n_items, n_secondary, use_memo_cache
+        options,
+        options_ptr,
+        colors,
+        n_items,
+        n_secondary,
+        use_memo_cache,
+        choose_heuristic,
     )
 
 
-def covers_bool_zdd(matrix, use_memo_cache=False):
+def covers_bool_zdd(matrix, use_memo_cache=False, choose_heuristic="MRV"):
     """
     Exact cover solver for a boolean matrix returning a ZDD
 
@@ -183,6 +197,10 @@ def covers_bool_zdd(matrix, use_memo_cache=False):
     ----------
     matrix: a numpy array whose nonzero entries indicate nodes.
             Columns are the items, rows are the options.
+    use_memo_cache: bool, whether to use memoization
+    choose_heuristic: string, heuristic to use when choosing items
+             default is "MRV", minimum remaining value
+             "leftmost" is an alternative
 
     Returns
     -------
@@ -200,5 +218,11 @@ def covers_bool_zdd(matrix, use_memo_cache=False):
     n_secondary = 0
     colors = np.zeros(n_data, dtype=np.uint32)
     yield from algorithm_z(
-        options, options_ptr, colors, n_items, n_secondary, use_memo_cache
+        options,
+        options_ptr,
+        colors,
+        n_items,
+        n_secondary,
+        use_memo_cache,
+        choose_heuristic,
     )

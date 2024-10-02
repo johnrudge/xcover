@@ -2,12 +2,21 @@
 
 import numpy as np
 from numpy import uint32 as u
-from numba import njit
+from numba import njit, types
 
 
-@njit("(uint32[:], uint32[:], uint32[:], uint32, uint32, bool_)", cache=True)
+@njit(
+    "(uint32[:], uint32[:], uint32[:], uint32, uint32, bool_, types.unicode_type)",
+    cache=True,
+)
 def algorithm_z(
-    options, options_ptr, colors, n_items, n_secondary_items, use_memo_cache
+    options,
+    options_ptr,
+    colors,
+    n_items,
+    n_secondary_items,
+    use_memo_cache,
+    choose_heuristic,
 ):
     """
     Donald Knuth's dancing cells algorithm Z.
@@ -179,9 +188,18 @@ def algorithm_z(
         """Restore a previous state of the matrix"""
         matrix_size[:], matrix_active_items_len[0], item_colorings[:] = state
 
-    def choose():
+    def choose_leftmost():
+        """C2: Choose the next item to cover. Return n_data if solved already"""
+        # Using the item with smallest index here
+        for item in range(n_primary_items):
+            if matrix_active_items_sparse[item] < matrix_active_items_len[0]:
+                return item, matrix_size[item]
+        return n_items, n_data
+
+    def choose_mrv():
         """C2: Choose the next item to cover. Return n_data if solved already"""
         # Using the minimum remaining value (MRV) heuristic here
+
         active_items = matrix_active_items[0 : matrix_active_items_len[0]]
         chosen_item = n_items
         chosen_length = n_data
@@ -192,6 +210,9 @@ def algorithm_z(
                 if chosen_length == u(1):
                     return chosen_item, chosen_length
         return chosen_item, chosen_length
+
+    def choose():
+        return choose_leftmost() if choose_heuristic == "leftmost" else choose_mrv()
 
     # Array for storing a signature of the present state
     bytelength = 1 + ((n_items + (n_colors + 1) * n_secondary_items) // 8)

@@ -2,6 +2,11 @@
 
 
 def to_zdd_algorithms(zdd):
+    """
+    Conversion to the ZDD format used by
+    https://github.com/Thilo-J/zdd_algorithms
+    """
+
     from zdd_algorithms import empty, base, get_node
 
     nodes = [empty(), base()]
@@ -12,6 +17,11 @@ def to_zdd_algorithms(zdd):
 
 
 def to_setset(zdd, n_options):
+    """
+    Conversion to the ZDD format used by
+    https://github.com/takemaru/graphillion
+    """
+
     from graphillion import setset
 
     setset.set_universe([i for i in range(n_options)])
@@ -29,6 +39,11 @@ def to_setset(zdd, n_options):
 def to_oxidd(
     zdd, n_options, inner_node_capacity=2000000, apply_cache_size=2000000, threads=1
 ):
+    """
+    Conversion to the ZDD format used by
+    https://github.com/OxiDD/oxidd
+    """
+
     from oxidd.zbdd import ZBDDManager
 
     zbdd = ZBDDManager(inner_node_capacity, apply_cache_size, threads)

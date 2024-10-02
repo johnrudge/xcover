@@ -13,18 +13,21 @@ n = 16
 options = list(combinations(range(n), 2))
 
 # Show the expected answer (n-1)!!
-print("Expected count:", factorial2(n - 1, exact=True) if not n % 2 else 0)
+print("Expected solution count:", factorial2(n - 1, exact=True) if not n % 2 else 0)
 
 
 def solve_covers():
-    print("covers count:", sum(1 for x in covers(options)))
+    print("covers solution count:", sum(1 for x in covers(options)))
 
 
 def solve_covers_zdd():
     n_options = len(options)
-    zdd = covers_zdd(options, use_memo_cache=True)
-    oxi_zdd = to_oxidd(zdd, n_options)
-    print("covers_zdd count:", int(oxi_zdd.sat_count_float(n_options)))
+    zdd = covers_zdd(options, use_memo_cache=True, choose_heuristic="leftmost")
+    oxi_zdd = to_oxidd(
+        zdd, n_options, inner_node_capacity=100000, apply_cache_size=50000
+    )
+    print("covers_zdd solution count:", int(oxi_zdd.sat_count_float(n_options)))
+    print("covers_zdd node count:", oxi_zdd.node_count())
 
 
 import timeit
