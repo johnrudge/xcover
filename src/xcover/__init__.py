@@ -19,7 +19,7 @@ The underlying numba-accelerated algorithms behind these solvers can be called d
 but these require the problems to be first cast in sparse matrix form.
 """
 
-__version__ = "0.2.1"
+__version__ = "0.2.2"
 __author__ = "John F. Rudge"
 
 from .solvers import covers, covers_bool, covers_zdd, covers_bool_zdd

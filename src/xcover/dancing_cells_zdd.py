@@ -271,17 +271,19 @@ def algorithm_z(
             item_stack.pop()
             need_to_undo = True
             if solution:
-                zdd_index += 1
                 s = solution.pop()
                 hi = zdd_stack.pop()
-                lo = zdd_stack[-1]
-                yield (zdd_index, s, lo, hi)  # the ZDD node
+                if hi > 0:
+                    zdd_index += 1
+                    lo = zdd_stack[-1]
+                    yield (zdd_index, s, lo, hi)  # the ZDD node
+                    zdd_stack[-1] = zdd_index
 
                 if use_memo_cache:
                     memo = memo_stack.pop()
                     if memo not in memo_cache:
                         memo_cache[memo] = u(hi)
-                zdd_stack[-1] = zdd_index
+
         else:
             if need_to_undo:
                 undo(state_stack[-1])  # return to previous state, C11
