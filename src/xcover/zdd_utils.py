@@ -9,8 +9,12 @@ def to_zdd_algorithms(zdd):
 
     from zdd_algorithms import empty, base, get_node
 
-    nodes = [empty(), base()]
+    nodes = [empty()]
+    done_something = False
     for z in zdd:
+        if not done_something:
+            nodes.append(base())
+            done_something = True
         i, n, lo, hi = z[0], z[1], z[2], z[3]
         nodes.append(get_node(n, nodes[lo], nodes[hi]))
     return nodes[-1]
@@ -49,8 +53,13 @@ def to_oxidd(
     zbdd = ZBDDManager(inner_node_capacity, apply_cache_size, threads)
     vbls = [zbdd.new_singleton() for i in range(n_options)]
 
-    nodes = [zbdd.empty(), zbdd.base()]
+    nodes = [zbdd.empty()]
+    done_something = False
     for z in zdd:
+        if not done_something:
+            nodes.append(zbdd.base())
+            done_something = True
+
         i, n, lo, hi = z[0], z[1], z[2], z[3]
         nodes.append(vbls[n].make_node(nodes[hi], nodes[lo]))
 
