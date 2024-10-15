@@ -40,6 +40,20 @@ def to_setset(zdd, n_options):
     return setset(setset.loads(zdd_string))
 
 
+def count_setset_nodes(ss):
+    """
+    Count the number of ZDD nodes in a graphillion setset object.
+    Somewhat cumbersome, must be a better way...
+    """
+
+    ss_string = ss.dumps()
+    if ss_string[0] == "B":  # an empty set just contains the single node B
+        return 1
+    for i, line in enumerate(ss_string.split("\n")):
+        if line == ".":  # "." marks end of file, have this no. plus T and B
+            return i + 2
+
+
 def to_oxidd(
     zdd, n_options, inner_node_capacity=2000000, apply_cache_size=2000000, threads=1
 ):
