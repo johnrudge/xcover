@@ -27,7 +27,7 @@ def read_xcover_from_file(filename):
                     secondary = None
                     colored = False
             else:
-                splits = line.rstrip("\n").split(" ")
+                splits = line.rstrip("\n").lstrip().split(" ")
                 options.append(splits)
 
     return options, primary, secondary, colored
