@@ -15,7 +15,7 @@ def read_xcover_from_file(filename):
                 ):  # a comment line, ignore
                     continue
                 first = False
-                split_pri_sec = line.rstrip("\n").split("|")
+                split_pri_sec = line.rstrip("\n").lstrip().split("|")
                 primary = split_pri_sec[0].split(" ")
                 if "" in primary:
                     primary.remove("")
