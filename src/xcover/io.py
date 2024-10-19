@@ -16,18 +16,15 @@ def read_xcover_from_file(filename):
                     continue
                 first = False
                 split_pri_sec = line.rstrip("\n").lstrip().split("|")
-                primary = split_pri_sec[0].split(" ")
-                if "" in primary:
-                    primary.remove("")
+                primary = split_pri_sec[0].split()
                 if len(split_pri_sec) > 1:
-                    secondary = split_pri_sec[1].split(" ")
-                    secondary.remove("")
+                    secondary = split_pri_sec[1].split()
                     colored = True
                 else:
                     secondary = None
                     colored = False
             else:
-                splits = line.rstrip("\n").lstrip().split(" ")
+                splits = line.rstrip("\n").lstrip().split()
                 options.append(splits)
 
     return options, primary, secondary, colored
