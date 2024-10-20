@@ -31,6 +31,9 @@ def algorithm_z(
     n_items: the number of possible items
     n_secondary_items: the number of items that are secondary
     use_memo_cache: bool, whether to use memoization
+    choose_heuristic: string, heuristic to use when choosing items
+             default is "MRV", minimum remaining value
+             "leftmost" is an alternative
 
     Returns
     -------
