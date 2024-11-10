@@ -171,7 +171,6 @@ def covers_zdd(
     Each yielded result is a ZDD node tuple (index, item, lo, hi).
     """
 
-    n_options = len(options)
     options, options_ptr, colors, n_items, n_secondary = input_as_arrays(
         options,
         primary=primary,
@@ -207,7 +206,6 @@ def covers_bool_zdd(matrix, use_memo_cache=False, choose_heuristic="MRV"):
     A generator object that yields a ZDD for the exact cover problem.
     Each yielded result is a ZDD node tuple (index, item, lo, hi).
     """
-    from .dancing_cells_zdd import algorithm_z
 
     n_items = matrix.shape[1]
     options = np.array(np.nonzero(matrix)[1], dtype=np.uint32)
