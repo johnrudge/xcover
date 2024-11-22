@@ -1,5 +1,7 @@
 """Simple file i/o"""
 
+from .solvers import items
+
 
 def read_xcover_from_file(filename):
     """
@@ -28,3 +30,32 @@ def read_xcover_from_file(filename):
                 options.append(splits)
 
     return options, primary, secondary, colored
+
+
+def write_xcover_to_file(
+    filename, options, primary=None, secondary=None, colored=False
+):
+    """
+    Write options to knuth-formatted file.
+    """
+
+    # A single list of all the options
+    all_opts = [o for opt in options for o in opt]
+
+    # Work out explicit primary and secondary item lists
+    primary, secondary = items(all_opts, primary, secondary, colored)
+
+    with open(filename, "w", encoding="utf-8") as cover_file:
+        for item in primary:
+            cover_file.write(str(item).replace(" ", ""))
+            cover_file.write(" ")
+        if secondary:
+            cover_file.write("| ")
+            for item in secondary:
+                cover_file.write(item + " ")
+        cover_file.write("\n")
+        for option in options:
+            for item in option:
+                cover_file.write(str(item).replace(" ", ""))
+                cover_file.write(" ")
+            cover_file.write("\n")
