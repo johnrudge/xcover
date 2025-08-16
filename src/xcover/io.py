@@ -33,10 +33,13 @@ def read_xcover_from_file(filename):
 
 
 def write_xcover_to_file(
-    filename, options, primary=None, secondary=None, colored=False
+    filename, options, primary=None, secondary=None, colored=False, item_to_string=None
 ):
     """
-    Write options to knuth-formatted file.
+    Write options to knuth-formatted DLX file.
+
+    item_to_string is a function that describes the mapping from items to
+    strings in the file. If None, a simple mapping which removes spaces is used.
     """
 
     # A single list of all the options
@@ -45,9 +48,14 @@ def write_xcover_to_file(
     # Work out explicit primary and secondary item lists
     primary, secondary = items(all_opts, primary, secondary, colored)
 
+    if item_to_string is None:
+
+        def item_to_string(item):
+            return str(item).replace(" ", "")
+
     with open(filename, "w", encoding="utf-8") as cover_file:
         for item in primary:
-            cover_file.write(str(item).replace(" ", ""))
+            cover_file.write(item_to_string(item))
             cover_file.write(" ")
         if secondary:
             cover_file.write("| ")
@@ -56,6 +64,6 @@ def write_xcover_to_file(
         cover_file.write("\n")
         for option in options:
             for item in option:
-                cover_file.write(str(item).replace(" ", ""))
+                cover_file.write(item_to_string(item))
                 cover_file.write(" ")
             cover_file.write("\n")

@@ -22,7 +22,7 @@ def to_zdd_algorithms(zdd):
 
 def to_setset(zdd, n_options):
     """
-    Conversion to the ZDD format used by
+    Conversion to the ZDD setset object used by
     https://github.com/takemaru/graphillion
     """
 
@@ -38,6 +38,21 @@ def to_setset(zdd, n_options):
         zdd_string += f"{i} {n} {lo_str} {hi_str}\n"
     zdd_string += ".\n"
     return setset(setset.loads(zdd_string))
+
+
+def to_setset_file(zdd, filename):
+    """
+    Conversion to the ZDD file format used by
+    https://github.com/takemaru/graphillion
+    """
+
+    with open(filename, "w", encoding="utf-8") as zdd_file:
+        for z in zdd:
+            i, n, lo, hi = z[0], 1 + z[1], z[2], z[3]
+            lo_str = "B" if lo == 0 else lo
+            hi_str = "T" if hi == 1 else hi
+            zdd_file.write(f"{i} {n} {lo_str} {hi_str}\n")
+        zdd_file.write(".\n")
 
 
 def count_setset_nodes(ss):
